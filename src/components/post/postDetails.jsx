@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import API from "../../utils/api";
 
+
 function PostDetails({ postId }) {
   const [comments, setComments] = useState([]);
   const [content, setContent] = useState("");

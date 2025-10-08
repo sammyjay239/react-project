@@ -21,6 +21,13 @@ import Dashboard from './components/Dashboard/Dashboard';
 import PostDetails from './components/post/postDetails';
 import AddPost from './components/post/AddPost';
 import BlogPage from './components/blogpage/blogPage';
+import Comment from './components/comment/Comment';
+// import Login from './components/login/login';
+// import Signup from './components/signup/signup';
+
+
+
+
 
 
 
@@ -45,6 +52,7 @@ function App() {
             <Advert />
             <Advan />
             <Posts />
+            <Comment />
           </>
         } />
         <Route path="/auth" element={<Auth />} />
@@ -57,6 +65,11 @@ function App() {
         <Route path="/post/:id" element={<PostDetails />} />
         <Route path="/add-post" element={<AddPost />} />
         <Route path="/" element={<BlogPage />} />
+        {/* <Route path="/signup" element={<Signup />} />
+        <Route path="/login" element={<Login />} /> */}
+
+
+
 
 
       </Routes>
