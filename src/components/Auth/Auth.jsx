@@ -1,29 +1,27 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../../utils/api"; // axios instance
+import api from "../../utils/api";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showLoginPassword, setShowLoginPassword] = useState(false);
+  const [preview, setPreview] = useState(null);
   const navigate = useNavigate();
 
-  // 🔹 Validate password strength
   const validatePassword = (password) => {
     const regex = /^(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/;
     return regex.test(password);
   };
 
-  // 🔹 Handle Signup
+  // ✅ Signup handler
   const handleSignup = async (e) => {
     e.preventDefault();
-    const form = new FormData(e.target);
-    const firstName = form.get("firstName");
-    const lastName = form.get("lastName");
-    const email = form.get("email");
-    const password = form.get("password");
-    const confirmPassword = form.get("confirmPassword");
+    const formData = new FormData(e.target);
+
+    const password = formData.get("password");
+    const confirmPassword = formData.get("confirmPassword");
 
     if (!validatePassword(password)) {
       alert(
@@ -38,27 +36,21 @@ const Auth = () => {
     }
 
     try {
-      const { data } = await api.post("/auth/signup", {
-        firstName,
-        lastName,
-        email,
-        password,
-        confirmPassword,
+      const { data } = await api.post("/auth/signup", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
 
-      // ✅ Store user + token
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
 
       alert("Signup successful!");
-      navigate("/"); // redirect to landing page
+      navigate("/");
     } catch (error) {
       console.error("Signup error:", error.response?.data || error.message);
       alert(error.response?.data?.message || "Signup failed!");
     }
   };
 
-  // 🔹 Handle Login
   const handleLogin = async (e) => {
     e.preventDefault();
     const form = new FormData(e.target);
@@ -68,16 +60,21 @@ const Auth = () => {
     try {
       const { data } = await api.post("/auth/login", { email, password });
 
-      // ✅ Save user and token
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
 
       alert(`Welcome back, ${data.user.firstName}!`);
-      navigate("/"); // redirect to landing page
+      navigate("/");
     } catch (error) {
       console.error("Login error:", error.response?.data || error.message);
       alert(error.response?.data?.message || "Login failed!");
     }
+  };
+
+  // ✅ handle image preview
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) setPreview(URL.createObjectURL(file));
   };
 
   return (
@@ -89,6 +86,28 @@ const Auth = () => {
               Sign Up
             </h1>
             <form onSubmit={handleSignup} className="flex flex-col space-y-4">
+              {/* Profile Picture */}
+              <div className="flex flex-col items-center space-y-2">
+                {preview ? (
+                  <img
+                    src={preview}
+                    alt="Preview"
+                    className="w-20 h-20 rounded-full object-cover border"
+                  />
+                ) : (
+                  <div className="w-20 h-20 rounded-full bg-gray-400 flex items-center justify-center text-white">
+                    No Image
+                  </div>
+                )}
+                <input
+                  type="file"
+                  name="profileImage"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="text-sm text-white"
+                />
+              </div>
+
               <input
                 type="text"
                 name="firstName"
@@ -111,7 +130,7 @@ const Auth = () => {
                 className="p-2 rounded-lg w-full"
               />
 
-              {/* Password with toggle 👁️ */}
+              {/* Password with toggle */}
               <div className="relative w-full">
                 <input
                   type={showPassword ? "text" : "password"}
@@ -148,6 +167,7 @@ const Auth = () => {
                 Sign Up
               </button>
             </form>
+
             <p className="text-center mt-4">
               Already have an account?{" "}
               <button
@@ -172,7 +192,6 @@ const Auth = () => {
                 className="p-2 rounded-lg w-full"
               />
 
-              {/* Password with toggle 👁️ */}
               <div className="relative w-full">
                 <input
                   type={showLoginPassword ? "text" : "password"}
