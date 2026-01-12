@@ -45,7 +45,6 @@ function App() {
           <>
 
             <Hero />
-            <Users />
             <Foods />
             <Cloths />
             <Phones />
@@ -65,6 +64,7 @@ function App() {
         <Route path="/post/:id" element={<PostDetails />} />
         <Route path="/add-post" element={<AddPost />} />
         <Route path="/" element={<BlogPage />} />
+        <Route path="/users" element={<Users />} />
         {/* <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} /> */}
 

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import Logo from '../../assets/samdev.PNG';
 import { Menu, X, Search, Bookmark, User } from "lucide-react"; // Lucide icons
 import { BiBookmark } from 'react-icons/bi';
+import Dashboard from '../Dashboard/Dashboard';
 
 function Nav() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -54,10 +55,10 @@ function Nav() {
         </li>
 
         <li>
-         <Link to="/Dashboard"> <User className="text-white cursor-pointer" /></Link>
+         <Link to="/users"> <User className="text-white cursor-pointer" /></Link>
         </li>
         <li>
-         <Link to=""> <Bookmark className="text-white cursor-pointer" /></Link>
+         <Link to="/Dashboard"> <Bookmark className="text-white cursor-pointer" /></Link>
         </li>
 
         <li>

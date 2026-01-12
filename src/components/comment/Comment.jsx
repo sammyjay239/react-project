@@ -1,20 +1,30 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-const Comments = ({ postId, user }) => {
+const Comments = ({ postId }) => {
   const [content, setContent] = useState("");
   const [comments, setComments] = useState([]);
+  const [user, setUser] = useState(null);
 
-  // Fetch comments
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) setUser(JSON.parse(storedUser));
+  }, []);
+
+  // ✅ Fetch comments
   useEffect(() => {
     const fetchComments = async () => {
-      const res = await axios.get(`/comments/${postId}`);
-      setComments(Array.isArray(res.data) ? res.data : res.data.comments || []);
-
+      try {
+        const res = await axios.get(`/api/addcomment/${postId}`);
+        setComments(Array.isArray(res.data) ? res.data : []);
+      } catch (error) {
+        console.error("Error fetching comments:", error);
+      }
     };
     fetchComments();
   }, [postId]);
 
+  // ✅ Handle comment submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -28,19 +38,21 @@ const Comments = ({ postId, user }) => {
       return;
     }
 
+    const token = localStorage.getItem("token");
+    console.log("Submitted content:", { postId, content });
+
     try {
-      const res = await axios.post("/comments", {
-        postId,
-        userId: user._id,
-        name: user.name,
-        content,
-      });
+      const res = await axios.post(
+        "/api/addcomment",
+        { postId, content },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
       setComments([res.data.newComment, ...comments]);
       setContent("");
     } catch (error) {
       console.error("Error posting comment:", error.response?.data || error.message);
-      alert(error.response?.data?.message || "Error posting comment");
+      alert(error.response?.data?.message || "erro posting comment");
     }
   };
 
@@ -48,7 +60,7 @@ const Comments = ({ postId, user }) => {
     <div>
       <h3 className="font-bold text-lg mb-2">Comments</h3>
       <form onSubmit={handleSubmit}>
-        <textarea 
+        <textarea
           className="w-full border p-2 rounded text-black"
           placeholder="Write a comment..."
           value={content}
@@ -56,7 +68,7 @@ const Comments = ({ postId, user }) => {
         />
         <button
           type="submit"
-          className="mt-2 bg-blue-600 text-black px-4 py-2 rounded hover:bg-blue-700"
+          className="mt-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
         >
           Post Comment
         </button>

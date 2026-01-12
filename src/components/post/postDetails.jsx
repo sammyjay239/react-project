@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import API from "../../utils/api";
 
-
-function PostDetails({ postId }) {
+function PostDetails() {
+  const { id: postId } = useParams(); // ✅ Get postId from URL
   const [comments, setComments] = useState([]);
   const [content, setContent] = useState("");
 
@@ -22,7 +23,7 @@ function PostDetails({ postId }) {
   const handleComment = async () => {
     if (!content.trim()) return alert("Comment cannot be empty");
     try {
-      await API.post("/comments", { postId, content });
+      await API.post("/comments/add", { postId, content });
       setContent("");
       fetchComments();
     } catch (error) {
